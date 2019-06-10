@@ -70,6 +70,13 @@ STATIC const mp_rom_map_elem_t board_global_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_SPI), MP_ROM_PTR(&board_spi_obj) },
     { MP_ROM_QSTR(MP_QSTR_UART), MP_ROM_PTR(&board_uart_obj) },
 
-    { MP_ROM_QSTR(MP_QSTR_DISPLAY), MP_ROM_PTR(&displays[0].display)}
+    // Display drivers, simple display for direct access and Displayio for game-like engine
+#if CIRCUITPY_SIMPLE_DISPLAY
+    { MP_ROM_QSTR(MP_QSTR_SIMPLE_DISPLAY), MP_ROM_PTR(&simple_display_obj)},
+#endif
+
+#if CIRCUITPY_DISPLAYIO
+    { MP_ROM_QSTR(MP_QSTR_DISPLAY), MP_ROM_PTR(&displays[0].display)},    
+#endif
 };
 MP_DEFINE_CONST_DICT(board_module_globals, board_global_dict_table);

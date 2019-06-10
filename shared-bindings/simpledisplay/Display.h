@@ -1,9 +1,9 @@
 /*
- * This file is part of the MicroPython project, http://micropython.org/
+ * This file is part of the Micro Python project, http://micropython.org/
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Scott Shawcroft
+ * Copyright (c) 2017, 2018 Scott Shawcroft for Adafruit Industries
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,31 +24,22 @@
  * THE SOFTWARE.
  */
 
-#ifndef MICROPY_INCLUDED_SHARED_BINDINGS_BOARD___INIT___H
-#define MICROPY_INCLUDED_SHARED_BINDINGS_BOARD___INIT___H
+#ifndef MICROPY_INCLUDED_SHARED_BINDINGS_SIMPLEDISPLAY_DISPLAY_H
+#define MICROPY_INCLUDED_SHARED_BINDINGS_SIMPLEDISPLAY_DISPLAY_H
 
-#include "py/obj.h"
+#include "common-hal/microcontroller/Pin.h"
 
-#include "shared-bindings/microcontroller/Pin.h"  // for the pin definitions
+extern const mp_obj_type_t simpledisplay_display_type;
 
-extern const mp_obj_dict_t board_module_globals;
+typedef struct _simpledisplay_display_obj_t {
+    mp_obj_base_t base;
+    mp_obj_t *bus;
+    uint16_t width;
+    uint16_t height;
+} simpledisplay_display_obj_t;
 
-mp_obj_t common_hal_board_get_i2c(void);
-mp_obj_t common_hal_board_create_i2c(void);
-MP_DECLARE_CONST_FUN_OBJ_0(board_i2c_obj);
+// Exposed driver functions
+void common_hal_simpledisplay_display_show(simpledisplay_display_obj_t* self);
 
-mp_obj_t common_hal_board_get_spi(void);
-mp_obj_t common_hal_board_create_spi(void);
-MP_DECLARE_CONST_FUN_OBJ_0(board_spi_obj);
 
-#ifdef BOARD_SIMPLE_DISPLAY
-mp_obj_t common_hal_board_get_simple_display(void);
-mp_obj_t common_hal_board_create_simple_display(void);
-MP_DECLARE_CONST_FUN_OBJ_0(simple_display_obj);
-#endif
-
-mp_obj_t common_hal_board_get_uart(void);
-mp_obj_t common_hal_board_create_uart(void);
-MP_DECLARE_CONST_FUN_OBJ_0(board_uart_obj);
-
-#endif  // MICROPY_INCLUDED_SHARED_BINDINGS_BOARD___INIT___H
+#endif // MICROPY_INCLUDED_SHARED_BINDINGS_SIMPLEDISPLAY_DISPLAY_H

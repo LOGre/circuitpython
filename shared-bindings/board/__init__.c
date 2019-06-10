@@ -90,6 +90,18 @@ mp_obj_t board_spi(void) {
 #endif
 MP_DEFINE_CONST_FUN_OBJ_0(board_spi_obj, board_spi);
 
+#ifdef BOARD_SIMPLE_DISPLAY
+mp_obj_t simple_display(void) {
+    return common_hal_board_get_simple_display();
+}
+#else
+mp_obj_t simple_display(void) {
+    mp_raise_NotImplementedError_varg(translate("No default %q bus"), MP_QSTR_SPI);
+    return NULL;
+}
+#endif
+MP_DEFINE_CONST_FUN_OBJ_0(simple_display_obj, simple_display);
+
 //| .. function:: UART()
 //|
 //|   Returns the `busio.UART` object for the board designated TX and RX pins. It is a singleton.

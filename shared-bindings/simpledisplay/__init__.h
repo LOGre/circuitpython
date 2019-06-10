@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Scott Shawcroft
+ * Copyright (c) 2018 Scott Shawcroft for Adafruit Industries
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,31 +24,13 @@
  * THE SOFTWARE.
  */
 
-#ifndef MICROPY_INCLUDED_SHARED_BINDINGS_BOARD___INIT___H
-#define MICROPY_INCLUDED_SHARED_BINDINGS_BOARD___INIT___H
+#ifndef MICROPY_INCLUDED_SHARED_BINDINGS_SIMPLEDISPLAY___INIT___H
+#define MICROPY_INCLUDED_SHARED_BINDINGS_SIMPLEDISPLAY___INIT___H
 
-#include "py/obj.h"
+#include "shared-bindings/simpledisplay/Display.h"
+#include "shared-bindings/simpledisplay/FourWire.h"
 
-#include "shared-bindings/microcontroller/Pin.h"  // for the pin definitions
+simpledisplay_fourwire_obj_t board_fourwire_obj;
+simpledisplay_display_obj_t board_display_obj;
 
-extern const mp_obj_dict_t board_module_globals;
-
-mp_obj_t common_hal_board_get_i2c(void);
-mp_obj_t common_hal_board_create_i2c(void);
-MP_DECLARE_CONST_FUN_OBJ_0(board_i2c_obj);
-
-mp_obj_t common_hal_board_get_spi(void);
-mp_obj_t common_hal_board_create_spi(void);
-MP_DECLARE_CONST_FUN_OBJ_0(board_spi_obj);
-
-#ifdef BOARD_SIMPLE_DISPLAY
-mp_obj_t common_hal_board_get_simple_display(void);
-mp_obj_t common_hal_board_create_simple_display(void);
-MP_DECLARE_CONST_FUN_OBJ_0(simple_display_obj);
-#endif
-
-mp_obj_t common_hal_board_get_uart(void);
-mp_obj_t common_hal_board_create_uart(void);
-MP_DECLARE_CONST_FUN_OBJ_0(board_uart_obj);
-
-#endif  // MICROPY_INCLUDED_SHARED_BINDINGS_BOARD___INIT___H
+#endif  // MICROPY_INCLUDED_SHARED_BINDINGS_SIMPLEDISPLAY___INIT___H

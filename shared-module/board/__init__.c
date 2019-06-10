@@ -37,6 +37,10 @@
 #include "shared-module/displayio/__init__.h"
 #endif
 
+#ifdef CIRCUITPY_SIMPLE_DISPLAY
+#include "shared-bindings/simpledisplay/Display.h"
+#endif
+
 #if BOARD_I2C
 mp_obj_t common_hal_board_get_i2c(void) {
     return MP_STATE_VM(shared_i2c_bus);
@@ -49,6 +53,21 @@ mp_obj_t common_hal_board_create_i2c(void) {
     common_hal_busio_i2c_construct(self, DEFAULT_I2C_BUS_SCL, DEFAULT_I2C_BUS_SDA, 400000, 0);
     MP_STATE_VM(shared_i2c_bus) = MP_OBJ_FROM_PTR(self);
     return MP_STATE_VM(shared_i2c_bus);
+}
+#endif
+
+#ifdef BOARD_SIMPLE_DISPLAY
+STATIC mp_obj_t singleton = NULL;
+extern simpledisplay_display_obj_t board_display_obj;
+
+mp_obj_t common_hal_board_get_simple_display(void) {
+    singleton = (mp_obj_t)&board_display_obj;
+    return singleton;
+}
+
+mp_obj_t common_hal_board_create_simple_display(void) {
+    singleton = (mp_obj_t)&board_display_obj;
+    return singleton;
 }
 #endif
 

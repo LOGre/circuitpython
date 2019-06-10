@@ -28,12 +28,47 @@
 #include "mpconfigboard.h"
 #include "hal/include/hal_gpio.h"
 #include "shared-bindings/busio/SPI.h"
+#include "shared-bindings/board/__init__.h"
+#include "tick.h"
+
+#if CIRCUITPY_SIMPLE_DISPLAY
+#include "shared-bindings/simpledisplay/FourWire.h"
+#include "shared-bindings/simpledisplay/__init__.h"
+#include "shared-module/simpledisplay/__init__.h"
+#include "shared-module/simpledisplay/Display.h"
+
+void board_init(void) {
+    // get the default SPI
+    busio_spi_obj_t* spi = common_hal_board_create_spi();
+    common_hal_busio_spi_construct(spi, &pin_PB13, &pin_PB15, NULL);
+    common_hal_busio_spi_never_reset(spi);
+    common_hal_busio_spi_configure(spi, 24000000, 0, 0, 8);
+
+    // Create a 4 wires SPI bus on top of it
+    simpledisplay_fourwire_obj_t* bus = &board_fourwire_obj;
+    bus->base.type = &simpledisplay_fourwire_type;
+    common_hal_simpledisplay_fourwire_construct(bus,
+        spi,
+        &pin_PB05, // TFT_DC Command or data
+        &pin_PB12, // TFT_CS Chip select
+        &pin_PA00); // TFT_RST Reset
+
+    // Create a simple display driver communicating with the 4 wires SPI
+    simpledisplay_display_obj_t* display = &board_display_obj;
+    display->base.type = &simpledisplay_display_type;
+    common_hal_simpledisplay_display_construct(display, bus, 160, 128);
+
+    // Display welcome message, a white screen to start :)
+    common_hal_simpledisplay_display_show(display);
+}
+#endif
+
+#if CIRCUITPY_DISPLAYIO
+#pragma message "CIRCUITPY_DISPLAYIO"
+
 #include "shared-bindings/displayio/FourWire.h"
 #include "shared-module/displayio/__init__.h"
 #include "shared-module/displayio/mipi_constants.h"
-#include "tick.h"
-
-displayio_fourwire_obj_t board_display_obj;
 
 #define DELAY 0x80
 
@@ -105,10 +140,12 @@ void board_init(void) {
         false, // single_byte_bounds
         false); // data_as_commands
 }
+#endif
 
 bool board_requests_safe_mode(void) {
     return false;
 }
 
 void reset_board(void) {
+
 }

@@ -126,6 +126,9 @@ endif
 ifeq ($(CIRCUITPY_DISPLAYIO),1)
 SRC_PATTERNS += displayio/% terminalio/% fontio/%
 endif
+ifeq ($(CIRCUITPY_SIMPLE_DISPLAY),1)
+SRC_PATTERNS += simpledisplay/%
+endif
 ifeq ($(CIRCUITPY_FREQUENCYIO),1)
 SRC_PATTERNS += frequencyio/%
 endif
@@ -322,6 +325,9 @@ $(filter $(SRC_PATTERNS), \
 	displayio/Shape.c \
 	displayio/TileGrid.c \
 	displayio/__init__.c \
+	simpledisplay/Display.c \
+	simpledisplay/FourWire.c \
+	simpledisplay/__init__.c \
 	fontio/BuiltinFont.c \
 	fontio/__init__.c \
 	gamepad/GamePad.c \

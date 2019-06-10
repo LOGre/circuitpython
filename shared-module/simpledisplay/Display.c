@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 Scott Shawcroft
+ * Copyright (c) 2018 Scott Shawcroft for Adafruit Industries
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,31 +24,30 @@
  * THE SOFTWARE.
  */
 
-#ifndef MICROPY_INCLUDED_SHARED_BINDINGS_BOARD___INIT___H
-#define MICROPY_INCLUDED_SHARED_BINDINGS_BOARD___INIT___H
+#include "shared-module/simpledisplay/__init__.h"
+#include "shared-bindings/simpledisplay/FourWire.h"
 
-#include "py/obj.h"
+// More info here: https://www.tonylabs.com/wp-content/uploads/MIPI_DCS_specification_v1.02.00.pdf
+enum mipi_command {
+    MIPI_COMMAND_SET_COLUMN_ADDRESS = 0x2a,
+    MIPI_COMMAND_SET_PAGE_ADDRESS = 0x2b,
+    MIPI_COMMAND_WRITE_MEMORY_START = 0x2c,
+};
 
-#include "shared-bindings/microcontroller/Pin.h"  // for the pin definitions
+// driver implementation of show()
+// Currently only send white RGB565 pixels
+void common_hal_simpledisplay_display_show(simpledisplay_display_obj_t* self) {
 
-extern const mp_obj_dict_t board_module_globals;
+    // send ST7735_RAMWR command aka MIPI_COMMAND_WRITE_MEMORY_START
+    uint8_t cmdBuf[] = { MIPI_COMMAND_WRITE_MEMORY_START };
+    common_hal_simpledisplay_fourwire_send(self->bus, true, cmdBuf, 1);
 
-mp_obj_t common_hal_board_get_i2c(void);
-mp_obj_t common_hal_board_create_i2c(void);
-MP_DECLARE_CONST_FUN_OBJ_0(board_i2c_obj);
+    // DUMMY: send white screen data to fill the screen
+    uint8_t dataBuf[160*128*2]; 
+    int i = 0;
+    for(i=0; i<160*128*2; i++) {
+        dataBuf[i] = 0xFF;
+    }
+    common_hal_simpledisplay_fourwire_send(self->bus, false, dataBuf, 160*128*2);
+}
 
-mp_obj_t common_hal_board_get_spi(void);
-mp_obj_t common_hal_board_create_spi(void);
-MP_DECLARE_CONST_FUN_OBJ_0(board_spi_obj);
-
-#ifdef BOARD_SIMPLE_DISPLAY
-mp_obj_t common_hal_board_get_simple_display(void);
-mp_obj_t common_hal_board_create_simple_display(void);
-MP_DECLARE_CONST_FUN_OBJ_0(simple_display_obj);
-#endif
-
-mp_obj_t common_hal_board_get_uart(void);
-mp_obj_t common_hal_board_create_uart(void);
-MP_DECLARE_CONST_FUN_OBJ_0(board_uart_obj);
-
-#endif  // MICROPY_INCLUDED_SHARED_BINDINGS_BOARD___INIT___H
