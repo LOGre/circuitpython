@@ -32,6 +32,9 @@
 #include "shared-bindings/time/__init__.h"
 #include "shared-module/simpledisplay/__init__.h"
 
+#include "shared-bindings/digitalio/DigitalInOut.h"
+#include "shared-bindings/pulseio/PWMOut.h"
+
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -116,5 +119,22 @@ void common_hal_simpledisplay_display_construct(simpledisplay_display_obj_t* sel
 
     common_hal_simpledisplay_fourwire_end_transaction(self->bus);
 
-}
+    // Set brightness
+    const mcu_pin_obj_t * backlight_pin = &pin_PA01;
+    pulseio_pwmout_obj_t backlight_pwm;
+    digitalio_digitalinout_obj_t backlight_inout;
 
+    if (common_hal_mcu_pin_is_free(backlight_pin)) {
+        pwmout_result_t result = common_hal_pulseio_pwmout_construct(&backlight_pwm, backlight_pin, 0, 50000, false);
+        if (result != PWMOUT_OK) {
+            common_hal_digitalio_digitalinout_construct(&backlight_inout, backlight_pin);
+            never_reset_pin_number(backlight_pin->number);
+            common_hal_digitalio_digitalinout_set_value(&backlight_inout, 1.0f > 0.99);
+        } 
+        else {
+            common_hal_pulseio_pwmout_never_reset(&backlight_pwm);
+            common_hal_pulseio_pwmout_set_duty_cycle(&backlight_pwm, (uint16_t) (0xffff * 1.0f));
+        }
+    }    
+
+}

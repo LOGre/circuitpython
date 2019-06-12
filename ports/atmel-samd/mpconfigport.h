@@ -69,6 +69,10 @@
 #define MICROPY_PY_UJSON                            (1)
 #define MICROPY_PY_REVERSE_SPECIAL_METHODS          (1)
 //      MICROPY_PY_UERRNO_LIST - Use the default
+
+// optimisations
+#define MICROPY_OPT_COMPUTED_GOTO                   (1)
+
 #endif
 
 // Turning off audioio, audiobusio, and touchio as necessary

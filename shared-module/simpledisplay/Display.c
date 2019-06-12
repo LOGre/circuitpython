@@ -45,8 +45,9 @@ void common_hal_simpledisplay_display_show(simpledisplay_display_obj_t* self) {
     // DUMMY: send white screen data to fill the screen
     uint8_t dataBuf[160*128*2]; 
     int i = 0;
-    for(i=0; i<160*128*2; i++) {
-        dataBuf[i] = 0xFF;
+    for(i=0; i<160*128; i++) {
+        dataBuf[2*i] = 0x05;
+        dataBuf[2*i+1] = 0xBF;
     }
     common_hal_simpledisplay_fourwire_send(self->bus, false, dataBuf, 160*128*2);
 }

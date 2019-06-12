@@ -64,6 +64,7 @@
 #include "common-hal/microcontroller/Processor.h"
 
 #include "samd/adc.h"
+#include "samd/clocks.h"
 
 #include "peripheral_clk_config.h"
 
@@ -280,8 +281,7 @@ float common_hal_mcu_processor_get_temperature(void) {
 
 
 uint32_t common_hal_mcu_processor_get_frequency(void) {
-    // TODO(tannewt): Determine this dynamically.
-    return CONF_CPU_FREQUENCY;
+    return compute_cpu_frequency();
 }
 
 void common_hal_mcu_processor_get_uid(uint8_t raw_id[]) {
