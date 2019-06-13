@@ -55,7 +55,7 @@
 
 STATIC const mp_rom_map_elem_t simpledisplay_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_simpledisplay) },
-    { MP_ROM_QSTR(MP_QSTR_Display), MP_ROM_PTR(&simpledisplay_display_type) },
+    { MP_ROM_QSTR(MP_QSTR_SimpleDisplay), MP_ROM_PTR(&simpledisplay_display_type) },
     { MP_ROM_QSTR(MP_QSTR_FourWire), MP_ROM_PTR(&simpledisplay_fourwire_type) },
 };
 

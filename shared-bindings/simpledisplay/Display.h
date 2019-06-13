@@ -28,6 +28,7 @@
 #define MICROPY_INCLUDED_SHARED_BINDINGS_SIMPLEDISPLAY_DISPLAY_H
 
 #include "common-hal/microcontroller/Pin.h"
+#include "extmod/modframebuf.h"
 
 extern const mp_obj_type_t simpledisplay_display_type;
 
@@ -39,7 +40,7 @@ typedef struct _simpledisplay_display_obj_t {
 } simpledisplay_display_obj_t;
 
 // Exposed driver functions
-void common_hal_simpledisplay_display_show(simpledisplay_display_obj_t* self);
+void common_hal_simpledisplay_display_show(simpledisplay_display_obj_t* self, mp_obj_framebuf_t* fb);
 
 
 #endif // MICROPY_INCLUDED_SHARED_BINDINGS_SIMPLEDISPLAY_DISPLAY_H

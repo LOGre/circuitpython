@@ -37,8 +37,9 @@
 #include "shared-module/displayio/__init__.h"
 #endif
 
-#ifdef CIRCUITPY_SIMPLE_DISPLAY
+#ifdef CIRCUITPY_SIMPLEDISPLAY
 #include "shared-bindings/simpledisplay/Display.h"
+#include "shared-bindings/simpledisplay/FourWire.h"
 #endif
 
 #if BOARD_I2C
@@ -56,18 +57,16 @@ mp_obj_t common_hal_board_create_i2c(void) {
 }
 #endif
 
-#ifdef BOARD_SIMPLE_DISPLAY
-STATIC mp_obj_t singleton = NULL;
+#ifdef BOARD_SIMPLEDISPLAY
+// We consider that only one TFT display is available
 extern simpledisplay_display_obj_t board_display_obj;
+extern simpledisplay_fourwire_obj_t board_fourwire_obj;
 
-mp_obj_t common_hal_board_get_simple_display(void) {
-    singleton = (mp_obj_t)&board_display_obj;
-    return singleton;
+mp_obj_t common_hal_board_get_simpledisplay(void) {
+    return (mp_obj_t)&board_display_obj;
 }
-
-mp_obj_t common_hal_board_create_simple_display(void) {
-    singleton = (mp_obj_t)&board_display_obj;
-    return singleton;
+mp_obj_t common_hal_board_get_simpledisplay_fourwire(void) {
+    return (mp_obj_t)&board_fourwire_obj;
 }
 #endif
 
@@ -122,7 +121,7 @@ void reset_board_busses(void) {
 #endif
 #if BOARD_SPI
     bool display_using_spi = false;
-    #ifdef CIRCUITPY_DISPLAYIO
+    #if CIRCUITPY_DISPLAYIO
     for (uint8_t i = 0; i < CIRCUITPY_DISPLAY_LIMIT; i++) {
         if (displays[i].fourwire_bus.bus == spi_singleton) {
             display_using_spi = true;

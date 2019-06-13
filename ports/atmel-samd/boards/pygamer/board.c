@@ -31,11 +31,15 @@
 #include "shared-bindings/board/__init__.h"
 #include "tick.h"
 
-#if CIRCUITPY_SIMPLE_DISPLAY
+#if CIRCUITPY_SIMPLEDISPLAY
 #include "shared-bindings/simpledisplay/FourWire.h"
 #include "shared-bindings/simpledisplay/__init__.h"
+#include "shared-bindings/simpledisplay/Display.h"
 #include "shared-module/simpledisplay/__init__.h"
 #include "shared-module/simpledisplay/Display.h"
+
+#include "boot.h"
+#include "extmod/modframebuf.h"
 
 void board_init(void) {
     // get the default SPI
@@ -53,18 +57,43 @@ void board_init(void) {
         &pin_PB12, // TFT_CS Chip select
         &pin_PA00); // TFT_RST Reset
 
-    // Create a simple display driver communicating with the 4 wires SPI
+    // Create a simple display driver communicating with the 4 wires SPI, this one will be shared
     simpledisplay_display_obj_t* display = &board_display_obj;
     display->base.type = &simpledisplay_display_type;
     common_hal_simpledisplay_display_construct(display, bus, 160, 128);
 
-    // Display welcome message, a white screen to start :)
-    common_hal_simpledisplay_display_show(display);
+    // Create good enough struct to display something
+    mp_obj_palette_t palette; // = { NULL, NULL, boot_palette16, 16    };
+    palette.colors = boot_palette16;
+    palette.nb_colors = 16;
+
+    // uint8_t dataBuf[160*128*2]; 
+    // int i = 0;
+    // for(i=0; i<40*128; i++) {
+    //     dataBuf[8*i]     = 0x00;
+    //     dataBuf[(8*i)+1] = 0x00;
+    //     dataBuf[(8*i)+2] = 0x00;
+    //     dataBuf[(8*i)+3] = 0x00;
+    //     dataBuf[(8*i)+4] = 0xff;  
+    //     dataBuf[(8*i)+5] = 0xff;  
+    //     dataBuf[(8*i)+6] = 0xff;  
+    //     dataBuf[(8*i)+7] = 0xff;  
+    // }
+
+    mp_obj_framebuf_t fb; // = { NULL, NULL, boot_data, 80*128, 160, 128, 160, FRAMEBUF_PAL16, &boot_palette16 };
+    fb.buf = boot_data;
+    fb.buf_len = 80*128;
+    fb.width = 160;
+    fb.height = 128;
+    fb.stride = 160;
+    fb.format = FRAMEBUF_PAL16;
+    fb.palette = &palette;
+
+    common_hal_simpledisplay_display_show(display, &fb);
 }
 #endif
 
 #if CIRCUITPY_DISPLAYIO
-#pragma message "CIRCUITPY_DISPLAYIO"
 
 #include "shared-bindings/displayio/FourWire.h"
 #include "shared-module/displayio/__init__.h"

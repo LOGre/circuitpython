@@ -27,6 +27,11 @@
 #include "shared-module/simpledisplay/__init__.h"
 #include "shared-bindings/simpledisplay/FourWire.h"
 
+#include "py/mperrno.h"
+#include "py/runtime.h"
+
+#include "extmod/modframebuf.h"
+
 // More info here: https://www.tonylabs.com/wp-content/uploads/MIPI_DCS_specification_v1.02.00.pdf
 enum mipi_command {
     MIPI_COMMAND_SET_COLUMN_ADDRESS = 0x2a,
@@ -36,19 +41,56 @@ enum mipi_command {
 
 // driver implementation of show()
 // Currently only send white RGB565 pixels
-void common_hal_simpledisplay_display_show(simpledisplay_display_obj_t* self) {
+void common_hal_simpledisplay_display_show(simpledisplay_display_obj_t* self, mp_obj_framebuf_t* fb) {
+
+     // get format, palette and pointer to byte buffer
+    uint8_t format = fb->format;   
+    mp_obj_palette_t * palette = fb->palette; 
+    byte *p = fb->buf;    
 
     // send ST7735_RAMWR command aka MIPI_COMMAND_WRITE_MEMORY_START
     uint8_t cmdBuf[] = { MIPI_COMMAND_WRITE_MEMORY_START };
     common_hal_simpledisplay_fourwire_send(self->bus, true, cmdBuf, 1);
 
-    // DUMMY: send white screen data to fill the screen
-    uint8_t dataBuf[160*128*2]; 
-    int i = 0;
-    for(i=0; i<160*128; i++) {
-        dataBuf[2*i] = 0x05;
-        dataBuf[2*i+1] = 0xBF;
-    }
-    common_hal_simpledisplay_fourwire_send(self->bus, false, dataBuf, 160*128*2);
+    const uint16_t * pal;
+    switch (format) {
+        case FRAMEBUF_RGB565:         
+            common_hal_simpledisplay_fourwire_send(self->bus, false, p, fb->buf_len);
+            break;            
+        case FRAMEBUF_PAL16:    
+            // after some tests, sending by packets of 8 pixels is the most efficient 
+            // and not too greedy in terms of memory
+            pal = palette->colors;
+            uint8_t pixels_per_tansfer = 8;
+            for (int i=0;i<fb->buf_len;i+=pixels_per_tansfer){
+                uint8_t cc[pixels_per_tansfer*4];
+                uint8_t counter = 0;
+                for(int j=0; j<pixels_per_tansfer; j++){                
+                    cc[counter++] = pal[(p[i+j] >> 4) & 0xf] >> 8;
+                    cc[counter++] = pal[(p[i+j] >> 4) & 0xf] & 0xff;					
+                    cc[counter++] = pal[p[i+j] & 0xf] >> 8;
+                    cc[counter++] = pal[p[i+j] & 0xf] & 0xff;					
+                }
+                common_hal_simpledisplay_fourwire_send(self->bus, false, (uint8_t*)&cc, pixels_per_tansfer*4);
+            }        
+            break;
+        case FRAMEBUF_PAL256:
+            pal = palette->colors;
+            uint8_t pixels8_per_tansfer = 16;
+            // after some tests, sending by packets of 16 pixels is the most efficient 
+            // and not too greedy in terms of memory			
+            for (int i=0;i<fb->buf_len;i+=pixels8_per_tansfer){
+                uint8_t cc[pixels8_per_tansfer*2];
+                uint8_t counter = 0;
+                for(int j=0; j<pixels8_per_tansfer; j++){                
+                    cc[counter++] = pal[p[i+j]] >> 8;
+                    cc[counter++] = pal[p[i+j] & 0xff];
+                }
+                common_hal_simpledisplay_fourwire_send(self->bus, false, (uint8_t*)&cc, pixels8_per_tansfer*2);
+			}		          
+            break;  
+        default:
+            mp_raise_ValueError(translate("invalid framebuffer format"));
+    }                          
 }
 

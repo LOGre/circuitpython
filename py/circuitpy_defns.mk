@@ -126,7 +126,7 @@ endif
 ifeq ($(CIRCUITPY_DISPLAYIO),1)
 SRC_PATTERNS += displayio/% terminalio/% fontio/%
 endif
-ifeq ($(CIRCUITPY_SIMPLE_DISPLAY),1)
+ifeq ($(CIRCUITPY_SIMPLEDISPLAY),1)
 SRC_PATTERNS += simpledisplay/%
 endif
 ifeq ($(CIRCUITPY_FREQUENCYIO),1)

@@ -41,10 +41,12 @@ mp_obj_t common_hal_board_get_spi(void);
 mp_obj_t common_hal_board_create_spi(void);
 MP_DECLARE_CONST_FUN_OBJ_0(board_spi_obj);
 
-#ifdef BOARD_SIMPLE_DISPLAY
-mp_obj_t common_hal_board_get_simple_display(void);
-mp_obj_t common_hal_board_create_simple_display(void);
-MP_DECLARE_CONST_FUN_OBJ_0(simple_display_obj);
+#ifdef BOARD_SIMPLEDISPLAY
+mp_obj_t common_hal_board_get_simpledisplay(void);
+MP_DECLARE_CONST_FUN_OBJ_0(simpledisplay_obj);
+
+mp_obj_t common_hal_board_get_simpledisplay_fourwire(void);
+MP_DECLARE_CONST_FUN_OBJ_0(simpledisplay_fourwire_obj);
 #endif
 
 mp_obj_t common_hal_board_get_uart(void);

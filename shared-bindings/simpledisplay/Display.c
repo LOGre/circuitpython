@@ -36,9 +36,11 @@
 
 #include "shared-bindings/microcontroller/Pin.h"
 #include "shared-bindings/util.h"
-#include "shared-module/simpledisplay/__init__.h"
+#include "shared-bindings/board/__init__.h"
 #include "shared-bindings/simpledisplay/FourWire.h"
 #include "shared-bindings/simpledisplay/Display.h"
+
+#include "shared-module/simpledisplay/__init__.h"
 
 //|   .. method:: Python constructor(4wireSPI, screen width, screen height)
 //|
@@ -59,33 +61,38 @@ STATIC mp_obj_t simpledisplay_display_make_new(const mp_obj_type_t *type, size_t
     // Retrieve 4wireSPI bus object
     mp_obj_t display_bus = args[ARG_display_bus].u_obj;
 
-    // create driver
-    simpledisplay_display_obj_t *screen = m_new_obj(simpledisplay_display_obj_t);
-    screen->base.type = &simpledisplay_display_type;
-    common_hal_simpledisplay_display_construct(screen,
-        display_bus, 
-        args[ARG_width].u_int, 
-        args[ARG_height].u_int);
+    // create driver if not done at boot, SHOULD NOT!
+    simpledisplay_display_obj_t *screen = common_hal_board_get_simpledisplay(); 
+    if(screen == NULL) {
+        screen = m_new_obj(simpledisplay_display_obj_t);
+        screen->base.type = &simpledisplay_display_type;
+        common_hal_simpledisplay_display_construct(screen,
+            display_bus, 
+            args[ARG_width].u_int, 
+            args[ARG_height].u_int);
+    }
 
-    // return driver
     return screen;
 }
 
 //|   .. method:: show()
 //|
-//|     Send data to the driver to be displayed, currently no data :)
+//|     Send data to the driver to be displayed
 //|
-STATIC mp_obj_t simpledisplay_display_obj_show(mp_obj_t self) {
+STATIC mp_obj_t simpledisplay_display_obj_show(mp_obj_t self, mp_obj_t fb_obj) {
     
     // get the driver pointer based on the python object
     simpledisplay_display_obj_t *screen = MP_OBJ_TO_PTR(self);
 
-    // call module implemetation
-    common_hal_simpledisplay_display_show(screen);
+    // get the fb pointer based on the python object
+    mp_obj_framebuf_t *fb = MP_OBJ_TO_PTR(fb_obj);
+
+    // call module implementation
+    common_hal_simpledisplay_display_show(screen, fb);
 
     return mp_const_none;
 }
-MP_DEFINE_CONST_FUN_OBJ_1(simpledisplay_display_show_obj, simpledisplay_display_obj_show);
+MP_DEFINE_CONST_FUN_OBJ_2(simpledisplay_display_show_obj, simpledisplay_display_obj_show);
 
 
 //|   .. attribute:: bus
@@ -115,7 +122,7 @@ STATIC MP_DEFINE_CONST_DICT(simpledisplay_display_locals_dict, simpledisplay_dis
 
 const mp_obj_type_t simpledisplay_display_type = {
     { &mp_type_type },
-    .name = MP_QSTR_Display,
+    .name = MP_QSTR_SimpleDisplay,
     .make_new = simpledisplay_display_make_new,
     .locals_dict = (mp_obj_dict_t*)&simpledisplay_display_locals_dict,
 };

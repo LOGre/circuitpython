@@ -70,6 +70,11 @@
 #define MICROPY_PY_REVERSE_SPECIAL_METHODS          (1)
 //      MICROPY_PY_UERRNO_LIST - Use the default
 
+// TFT Drivers
+#if CIRCUITPY_SIMPLEDISPLAY
+#define MICROPY_PY_FRAMEBUF                         (1)
+#endif
+
 // optimisations
 #define MICROPY_OPT_COMPUTED_GOTO                   (1)
 

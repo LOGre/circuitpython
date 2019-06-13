@@ -257,7 +257,6 @@ extern const struct _mp_obj_module_t board_module;
 #define BOARD_I2C (defined(DEFAULT_I2C_BUS_SDA) && defined(DEFAULT_I2C_BUS_SCL))
 #define BOARD_SPI (defined(DEFAULT_SPI_BUS_SCK) && defined(DEFAULT_SPI_BUS_MISO) && defined(DEFAULT_SPI_BUS_MOSI))
 #define BOARD_UART (defined(DEFAULT_UART_BUS_RX) && defined(DEFAULT_UART_BUS_TX))
-#define BOARD_SIMPLE_DISPLAY (defined CIRCUITPY_SIMPLE_DISPLAY)
 
 #if BOARD_I2C
 #define BOARD_I2C_ROOT_POINTER mp_obj_t shared_i2c_bus;
@@ -293,6 +292,14 @@ extern const struct _mp_obj_module_t digitalio_module;
 #define DIGITALIO_MODULE
 #endif
 
+#if CIRCUITPY_SIMPLEDISPLAY
+extern const struct _mp_obj_module_t simpledisplay_module;
+#define SIMPLEDISPLAY_MODULE       { MP_OBJ_NEW_QSTR(MP_QSTR_simpledisplay), (mp_obj_t)&simpledisplay_module },
+#define BOARD_SIMPLEDISPLAY (defined CIRCUITPY_SIMPLEDISPLAY)
+#else
+#define SIMPLEDISPLAY_MODULE
+#endif
+
 #if CIRCUITPY_DISPLAYIO
 extern const struct _mp_obj_module_t displayio_module;
 extern const struct _mp_obj_module_t fontio_module;
@@ -306,13 +313,6 @@ extern const struct _mp_obj_module_t terminalio_module;
 #define FONTIO_MODULE
 #define TERMINALIO_MODULE
 #define CIRCUITPY_DISPLAY_LIMIT (0)
-#endif
-
-#if CIRCUITPY_SIMPLE_DISPLAY
-extern const struct _mp_obj_module_t simpledisplay_module;
-#define SIMPLE_DISPLAY_MODULE       { MP_OBJ_NEW_QSTR(MP_QSTR_simpledisplay), (mp_obj_t)&simpledisplay_module },
-#else
-#define SIMPLE_DISPLAY_MODULE
 #endif
 
 #if CIRCUITPY_FREQUENCYIO
@@ -601,6 +601,7 @@ extern const struct _mp_obj_module_t ustack_module;
     ROTARYIO_MODULE \
     RTC_MODULE \
     SAMD_MODULE \
+    SIMPLEDISPLAY_MODULE \
     STAGE_MODULE \
     STORAGE_MODULE \
     STRUCT_MODULE \

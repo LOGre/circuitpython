@@ -46,35 +46,35 @@
 #define DELAY 0x80
 
 uint8_t display_init_sequence[] = {
-    0x01, 0 | DELAY, 150, // SWRESET
-    0x11, 0 | DELAY, 255, // SLPOUT
-    0xb1, 3, 0x01, 0x2C, 0x2D, // _FRMCTR1
-    0xb2, 3, 0x01, 0x2C, 0x2D, //
-    0xb3, 6, 0x01, 0x2C, 0x2D, 0x01, 0x2C, 0x2D,
-    0xb4, 1, 0x07, // _INVCTR line inversion
-    0xc0, 3, 0xa2, 0x02, 0x84, // _PWCTR1 GVDD = 4.7V, 1.0uA
-    0xc1, 1, 0xc5, // _PWCTR2 VGH=14.7V, VGL=-7.35V
-    0xc2, 2, 0x0a, 0x00, // _PWCTR3 Opamp current small, Boost frequency
-    0xc3, 2, 0x8a, 0x2a,
-    0xc4, 2, 0x8a, 0xee,
-    0xc5, 1, 0x0e, // _VMCTR1 VCOMH = 4V, VOML = -1.1V
-    0x2a, 0, // _INVOFF
-    0x36, 1, 0x00, // _MADCTL top to bottom refresh in vsync aligned order.
-    // 1 clk cycle nonoverlap, 2 cycle gate rise, 3 sycle osc equalie,
-    // fix on VTL
-    0x3a, 1, 0x05, // COLMOD - 16bit color
-    0xe0, 16, 0x02, 0x1c, 0x07, 0x12, // _GMCTRP1 Gamma
+    0x01, 0 | DELAY, 150,                           // SWRESET, Software reset, 0 args, w/delay
+    0x11, 0 | DELAY, 255,                           // SLPOUT, Out of sleep mode, 0 args, w/delay
+    0xb1, 3, 0x01, 0x2C, 0x2D,                      // FRMCTR1 Frame Rate Control (In normal mode/Full colors) (Meowbit: blue tab 0x00, 0x06, 0x03})
+    0xb2, 3, 0x01, 0x2C, 0x2D,                      // FRMCTR2 Frame Rate Control (In Idle mode/8-colors)
+    0xb3, 6, 0x01, 0x2C, 0x2D, 0x01, 0x2C, 0x2D,    // FRMCTR3 Frame Rate Control (In Partial mode/full colors)
+    0xb4, 1, 0x07,                                  // INVCTR line inversion (Meowbit: 1, 0x3)
+    0xc0, 3, 0xa2, 0x02, 0x84,                      // PWCTR1 GVDD = 4.7V, 1.0uA
+    0xc1, 1, 0xc5,                                  // PWCTR2 VGH=14.7V, VGL=-7.35V
+    0xc2, 2, 0x0a, 0x00,                            // PWCTR3 Opamp current small, Boost frequency
+    0xc3, 2, 0x8a, 0x2a,                            // PWCTR4 in Idle mode/ 8-colors
+    0xc4, 2, 0x8a, 0xee,                            // PWCTR5 in Partial mode/ full-colors
+    0xc5, 1, 0x0e,                                  // VMCTR1 VCOMH = 4V, VOML = -1.1V
+    0x2a, 0,                                        // INVOFF, Don't invert display, no args, no delay
+    0x36, 1, 0xA0,                                  // MADCTL top to bottom refresh in vsync aligned order. (Meowbit: 0x60)
+                                                    // 1 clk cycle nonoverlap, 2 cycle gate rise, 3 sycle osc equalie, fix on VTL
+                                                    // 0xA0 => 101 X-Y Exchange Y-Mirror p63
+    0x3a, 1, 0x05,                                  // COLMOD - set color mode, 1 arg, no delay: 16bit color RGB565
+    0xe0, 16, 0x02, 0x1c, 0x07, 0x12,               // GMCTRP1 Gamma, Magical unicorn dust, 16 args, no delay:
               0x37, 0x32, 0x29, 0x2d,
               0x29, 0x25, 0x2B, 0x39,
               0x00, 0x01, 0x03, 0x10,
-    0xe1, 16, 0x03, 0x1d, 0x07, 0x06, // _GMCTRN1
+    0xe1, 16, 0x03, 0x1d, 0x07, 0x06,               // GMCTRN1, Sparkles and rainbows, 16 args, no delay:
               0x2E, 0x2C, 0x29, 0x2D,
               0x2E, 0x2E, 0x37, 0x3F,
               0x00, 0x00, 0x02, 0x10,
-    0x2a, 3, 0x02, 0x00, 0x81, // _CASET XSTART = 2, XEND = 129
-    0x2b, 3, 0x02, 0x00, 0x81, // _RASET XSTART = 2, XEND = 129
-    0x13, 0 | DELAY, 10, // _NORON
-    0x29, 0 | DELAY, 100, // _DISPON
+    0x2a, 4, 0x00, 0x00, 0x00, 0x9F,                      // CASET XSTART = 2, XEND = 129 (Meowbit: 0,0,0,159)
+    0x2b, 4, 0x00, 0x00, 0x00, 0x7F,                      // RASET XSTART = 2, XEND = 129 (Meowbit: 0,0,0,127)
+    0x13, 0 | DELAY, 10,                            // NORON, Normal display on, no args, w/delay
+    0x29, 0 | DELAY, 100,                           // DISPON, Main screen turn on, no args w/delay
 };
 
 // internal driver constructor

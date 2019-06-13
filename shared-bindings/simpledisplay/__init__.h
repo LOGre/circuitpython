@@ -30,6 +30,7 @@
 #include "shared-bindings/simpledisplay/Display.h"
 #include "shared-bindings/simpledisplay/FourWire.h"
 
+// We consider that only one display is available
 simpledisplay_fourwire_obj_t board_fourwire_obj;
 simpledisplay_display_obj_t board_display_obj;
 
