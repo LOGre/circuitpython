@@ -27,6 +27,7 @@
 #include "shared-bindings/simpledisplay/Display.h"
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include "lib/utils/context_manager_helpers.h"
 #include "py/binary.h"
@@ -62,7 +63,7 @@ STATIC mp_obj_t simpledisplay_display_make_new(const mp_obj_type_t *type, size_t
     mp_obj_t display_bus = args[ARG_display_bus].u_obj;
 
     // create driver if not done at boot, SHOULD NOT!
-    simpledisplay_display_obj_t *screen = common_hal_board_get_simpledisplay(); 
+    simpledisplay_display_obj_t *screen = &board_display_obj;
     if(screen == NULL) {
         screen = m_new_obj(simpledisplay_display_obj_t);
         screen->base.type = &simpledisplay_display_type;
@@ -81,11 +82,25 @@ STATIC mp_obj_t simpledisplay_display_make_new(const mp_obj_type_t *type, size_t
 //|
 STATIC mp_obj_t simpledisplay_display_obj_show(mp_obj_t self, mp_obj_t fb_obj) {
     
+    printf("simpledisplay_display_obj_show\n");
+
     // get the driver pointer based on the python object
     simpledisplay_display_obj_t *screen = MP_OBJ_TO_PTR(self);
 
+    printf("screen ptr: %p width: %d height: %d\n", screen, screen->width, screen->height);
+
     // get the fb pointer based on the python object
     mp_obj_framebuf_t *fb = MP_OBJ_TO_PTR(fb_obj);
+
+    mp_buffer_info_t bufinfo;
+    mp_get_buffer_raise(fb_obj, &bufinfo, MP_BUFFER_READ);
+    fb->buf = bufinfo.buf;
+    fb->buf_len = bufinfo.len;
+    
+    printf("fb ptr: %p format: %d width: %d len: %d\n", fb, fb->format, fb->width, fb->buf_len);
+
+    mp_obj_palette_t * pal = fb->palette;
+    printf("palette: %p colors: %d\n", pal, pal->nb_colors);
 
     // call module implementation
     common_hal_simpledisplay_display_show(screen, fb);

@@ -89,30 +89,6 @@ mp_obj_t board_spi(void) {
 #endif
 MP_DEFINE_CONST_FUN_OBJ_0(board_spi_obj, board_spi);
 
-#ifdef BOARD_SIMPLEDISPLAY
-mp_obj_t simpledisplay(void) {
-    return common_hal_board_get_simpledisplay();
-}
-#else
-mp_obj_t simpledisplay(void) {
-    mp_raise_NotImplementedError_varg(translate("No default %q driver"), MP_QSTR_SIMPLEDISPLAY);
-    return NULL;
-}
-#endif
-MP_DEFINE_CONST_FUN_OBJ_0(simpledisplay_obj, simpledisplay);
-
-#ifdef BOARD_SIMPLEDISPLAY
-mp_obj_t simpledisplay_fourwire(void) {
-    return common_hal_board_get_simpledisplay_fourwire();
-}
-#else
-mp_obj_t simpledisplay_fourwire(void) {
-    mp_raise_NotImplementedError_varg(translate("No default %q bus"), MP_QSTR_SIMPLEDISPLAY_FOURWIRE);
-    return NULL;
-}
-#endif
-MP_DEFINE_CONST_FUN_OBJ_0(simpledisplay_fourwire_obj, simpledisplay_fourwire);
-
 //| .. function:: UART()
 //|
 //|   Returns the `busio.UART` object for the board designated TX and RX pins. It is a singleton.

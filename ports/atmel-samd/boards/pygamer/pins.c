@@ -1,7 +1,14 @@
 #include "shared-bindings/board/__init__.h"
 
 #include "boards/board.h"
+
+#if CIRCUITPY_DISPLAYIO
 #include "shared-module/displayio/__init__.h"
+#endif
+
+#if CIRCUITPY_SIMPLEDISPLAY
+#include "shared-module/simpledisplay/__init__.h"
+#endif
 
 STATIC const mp_rom_map_elem_t board_global_dict_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_A0),  MP_ROM_PTR(&pin_PA02) },
@@ -72,8 +79,10 @@ STATIC const mp_rom_map_elem_t board_global_dict_table[] = {
 
     // Display drivers, simple display for direct access and Displayio for game-like engine
 #if CIRCUITPY_SIMPLEDISPLAY
-    { MP_ROM_QSTR(MP_QSTR_SIMPLEDISPLAY), MP_ROM_PTR(&simpledisplay_obj)},
-    { MP_ROM_QSTR(MP_QSTR_SIMPLEDISPLAY_FOURWIRE), MP_ROM_PTR(&simpledisplay_fourwire_obj)},
+    //{ MP_ROM_QSTR(MP_QSTR_SIMPLEDISPLAY), MP_ROM_PTR(&simpledisplay_obj)},
+    //{ MP_ROM_QSTR(MP_QSTR_SIMPLEDISPLAY_FOURWIRE), MP_ROM_PTR(&simpledisplay_fourwire_obj)},
+    { MP_ROM_QSTR(MP_QSTR_SIMPLEDISPLAY), MP_ROM_PTR(&board_display_obj)},
+    { MP_ROM_QSTR(MP_QSTR_SIMPLEDISPLAY_FOURWIRE), MP_ROM_PTR(&board_fourwire_obj)},    
 #endif
 
 #if CIRCUITPY_DISPLAYIO

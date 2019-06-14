@@ -28,6 +28,10 @@
 #define MICROPY_INCLUDED_SHARED_MODULE_SIMPLEDISPLAY___INIT___H
 
 #include "shared-bindings/simpledisplay/Display.h"
+#include "shared-bindings/simpledisplay/FourWire.h"
+
+extern simpledisplay_display_obj_t board_display_obj;
+extern simpledisplay_fourwire_obj_t board_fourwire_obj;  
 
 void common_hal_simpledisplay_display_construct(simpledisplay_display_obj_t* self, mp_obj_t bus, uint16_t width, uint16_t height);
 

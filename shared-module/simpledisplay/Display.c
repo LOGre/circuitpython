@@ -32,6 +32,8 @@
 
 #include "extmod/modframebuf.h"
 
+#include <stdio.h>
+
 // More info here: https://www.tonylabs.com/wp-content/uploads/MIPI_DCS_specification_v1.02.00.pdf
 enum mipi_command {
     MIPI_COMMAND_SET_COLUMN_ADDRESS = 0x2a,
@@ -43,10 +45,17 @@ enum mipi_command {
 // Currently only send white RGB565 pixels
 void common_hal_simpledisplay_display_show(simpledisplay_display_obj_t* self, mp_obj_framebuf_t* fb) {
 
+    printf("common_hal_simpledisplay_display_show\n");
+
      // get format, palette and pointer to byte buffer
     uint8_t format = fb->format;   
     mp_obj_palette_t * palette = fb->palette; 
     byte *p = fb->buf;    
+
+    uint8_t * cols = palette->colors;
+
+    printf("palette: %p colors: %d colors[2]: %d\n", palette, palette->nb_colors, cols[2]);
+    printf("fb %p format: %d buflen: %d width: %d\n", fb, format, fb->buf_len, fb->width);
 
     // send ST7735_RAMWR command aka MIPI_COMMAND_WRITE_MEMORY_START
     uint8_t cmdBuf[] = { MIPI_COMMAND_WRITE_MEMORY_START };

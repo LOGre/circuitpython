@@ -57,20 +57,6 @@ mp_obj_t common_hal_board_create_i2c(void) {
 }
 #endif
 
-#ifdef BOARD_SIMPLEDISPLAY
-// We consider that only one TFT display is available
-extern simpledisplay_display_obj_t board_display_obj;
-extern simpledisplay_fourwire_obj_t board_fourwire_obj;
-
-mp_obj_t common_hal_board_get_simpledisplay(void) {
-    return (mp_obj_t)&board_display_obj;
-}
-mp_obj_t common_hal_board_get_simpledisplay_fourwire(void) {
-    return (mp_obj_t)&board_fourwire_obj;
-}
-#endif
-
-
 #if BOARD_SPI
 // Statically allocate the SPI object so it can live past the end of the heap and into the next VM.
 // That way it can be used by built-in FourWire displays and be accessible through board.SPI().

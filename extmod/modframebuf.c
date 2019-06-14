@@ -121,8 +121,8 @@ void fill_rect(const mp_obj_framebuf_t *fb, int x, int y, int w, int h, uint32_t
 // 0. python object with buffer
 // 1. width 
 // 2. height
-// 3. format
-// 4. stride
+// 3. stride
+// 4. format
 // 5. palette object
 STATIC mp_obj_t framebuf_make_new(const mp_obj_type_t *type, size_t n_args, const mp_obj_t *args, mp_map_t *kw_args) {
     mp_arg_check_num(n_args, kw_args, 4, 6, false);
@@ -137,21 +137,25 @@ STATIC mp_obj_t framebuf_make_new(const mp_obj_type_t *type, size_t n_args, cons
 
     o->width = mp_obj_get_int(args[1]);
     o->height = mp_obj_get_int(args[2]);
-    o->format = mp_obj_get_int(args[3]);
-    o->stride = mp_obj_get_int(args[4]);
-
-    if (n_args == 6) {
-        o->palette = MP_OBJ_TO_PTR(args[5]);       
-    }  
+    o->stride = mp_obj_get_int(args[3]);
+    o->format = mp_obj_get_int(args[4]);    
 
     switch (o->format) {
         case FRAMEBUF_MONO:
         case FRAMEBUF_RGB565:
+            break;
         case FRAMEBUF_PAL16:
         case FRAMEBUF_PAL256:
+            if (n_args == 6) {
+                o->palette = MP_OBJ_TO_PTR(args[5]);       
+            }  
+            else {
+                mp_raise_ValueError(translate("Missing palette"));   
+            }        
             break;
         default:
-            mp_raise_ValueError(translate("invalid format"));
+            printf("format: %d\n", o->format);
+            mp_raise_ValueError(translate("invalid framebuffer format"));
     }
 
     return MP_OBJ_FROM_PTR(o);

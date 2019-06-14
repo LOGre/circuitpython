@@ -83,7 +83,7 @@ STATIC mp_obj_t simpledisplay_fourwire_make_new(const mp_obj_type_t *type, size_
     }
 
     // Was created at boot, no need to create a second one!
-    simpledisplay_fourwire_obj_t* self = common_hal_board_get_simpledisplay_fourwire();
+    simpledisplay_fourwire_obj_t* self = &board_fourwire_obj; 
 
     if(self == NULL) {
         mp_obj_t spi = args[ARG_spi_bus].u_obj;
