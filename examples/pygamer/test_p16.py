@@ -1,0 +1,24 @@
+import simpledisplay
+import framebuf
+import board
+import palette
+
+print("Buffers")
+
+fbuf = bytearray(80*128)
+c64_cols = [0x00, 0x00, 0xFF, 0xFF, 0x89, 0xC6, 0x65, 0xB7, 0x89, 0xF2, 0x55, 0x09, 0x41, 0x91, 0xBE, 0x6E, 
+            0x8A, 0xA5, 0x52, 0x00, 0xBB, 0x4C, 0x52, 0x8A, 0x7B, 0xCF, 0x97, 0x11, 0x7B, 0x58, 0x9C, 0xF3] 
+colors = bytearray(c64_cols)
+
+print(colors)
+
+tft = board.SIMPLEDISPLAY
+pal = palette.Palette(colors, 16)
+fb = framebuf.FrameBuffer(fbuf, 160, 128, 160, framebuf.PAL16, pal)
+
+with open("images/test.p16", "rb") as f:
+    f.readinto(fbuf)
+
+print("Buffer len {}".format(len(fbuf)))
+
+tft.show(fb)
