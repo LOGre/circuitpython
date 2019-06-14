@@ -92,6 +92,7 @@ STATIC mp_obj_t simpledisplay_display_obj_show(mp_obj_t self, mp_obj_t fb_obj) {
     // get the fb pointer based on the python object
     mp_obj_framebuf_t *fb = MP_OBJ_TO_PTR(fb_obj);
 
+    // Not sure why I need to do it after the framebuf make_new.... else buf is empty
     mp_buffer_info_t bufinfo;
     mp_get_buffer_raise(fb_obj, &bufinfo, MP_BUFFER_READ);
     fb->buf = bufinfo.buf;
@@ -99,8 +100,10 @@ STATIC mp_obj_t simpledisplay_display_obj_show(mp_obj_t self, mp_obj_t fb_obj) {
     
     printf("fb ptr: %p format: %d width: %d len: %d\n", fb, fb->format, fb->width, fb->buf_len);
 
-    mp_obj_palette_t * pal = fb->palette;
-    printf("palette: %p colors: %d\n", pal, pal->nb_colors);
+    if(fb->format != FRAMEBUF_RGB565) {
+        mp_obj_palette_t * pal = fb->palette;
+        printf("palette: %p colors: %d\n", pal, pal->nb_colors);
+    }
 
     // call module implementation
     common_hal_simpledisplay_display_show(screen, fb);

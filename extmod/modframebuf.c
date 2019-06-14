@@ -162,10 +162,22 @@ STATIC mp_obj_t framebuf_make_new(const mp_obj_type_t *type, size_t n_args, cons
 }
 
 STATIC mp_int_t framebuf_get_buffer(mp_obj_t self_in, mp_buffer_info_t *bufinfo, mp_uint_t flags) {
-    (void)flags;
+ (void)flags;
     mp_obj_framebuf_t *self = MP_OBJ_TO_PTR(self_in);
     bufinfo->buf = self->buf;
-    bufinfo->len = self->stride * self->height * (self->format == FRAMEBUF_RGB565 ? 2 : 1);
+    float bpp = 0;
+    switch(self->format) {
+        case FRAMEBUF_RGB565:
+            bpp = 2.0;
+            break;
+        case FRAMEBUF_PAL256:
+            bpp = 1.0;
+            break;
+        case FRAMEBUF_PAL16:
+            bpp = 0.5;    
+            break;          
+    }
+    bufinfo->len = (self->stride * self->height) * bpp;
     bufinfo->typecode = 'B'; // view framebuf as bytes
     return 0;
 }

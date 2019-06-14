@@ -49,13 +49,21 @@ void common_hal_simpledisplay_display_show(simpledisplay_display_obj_t* self, mp
 
      // get format, palette and pointer to byte buffer
     uint8_t format = fb->format;   
-    mp_obj_palette_t * palette = fb->palette; 
+    
+    // retrieve buffer
     byte *p = fb->buf;    
 
-    uint8_t * cols = palette->colors;
+    // retrieve palette (if exists)
+    mp_obj_palette_t * palette = fb->palette; 
 
-    printf("palette: %p colors: %d colors[2]: %d\n", palette, palette->nb_colors, cols[2]);
     printf("fb %p format: %d buflen: %d width: %d\n", fb, format, fb->buf_len, fb->width);
+    if(fb->format != FRAMEBUF_RGB565) {
+        uint16_t * cols = palette->colors;
+        printf("palette: %p colors: %d\n", palette, palette->nb_colors);
+        for(int i=0; i<palette->nb_colors; i++) {
+            printf("col[%d] : 0x%04x\n", i, cols[i]);
+        }
+    }
 
     // send ST7735_RAMWR command aka MIPI_COMMAND_WRITE_MEMORY_START
     uint8_t cmdBuf[] = { MIPI_COMMAND_WRITE_MEMORY_START };
