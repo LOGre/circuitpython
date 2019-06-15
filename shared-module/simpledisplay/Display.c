@@ -73,13 +73,25 @@ void common_hal_simpledisplay_display_show(simpledisplay_display_obj_t* self, mp
     switch (format) {
         case FRAMEBUF_RGB565:         
             common_hal_simpledisplay_fourwire_send(self->bus, false, p, fb->buf_len);
-            break;            
+            break;    
+        case FRAMEBUF_PAL4:    
+            // TODO: send by batch
+            pal = palette->colors;
+            for (int i=0; i<fb->buf_len; i++) {
+                uint16_t cc[4];  
+                cc[0] = pal[(p[i] >> 0) & 0x03] & 0xffff;
+                cc[1] = pal[(p[i] >> 2) & 0x03] & 0xffff;
+                cc[2] = pal[(p[i] >> 4) & 0x03] & 0xffff;
+                cc[3] = pal[(p[i] >> 6) & 0x03] & 0xffff;
+                common_hal_simpledisplay_fourwire_send(self->bus, false, (uint8_t*)&cc, 4*2);    					
+            }
+            break;                    
         case FRAMEBUF_PAL16:    
             // after some tests, sending by packets of 8 pixels is the most efficient 
             // and not too greedy in terms of memory
             pal = palette->colors;
             uint8_t pixels_per_tansfer = 8;
-            for (int i=0;i<fb->buf_len;i+=pixels_per_tansfer){
+            for (int i=0; i<fb->buf_len; i+=pixels_per_tansfer) {
                 uint8_t cc[pixels_per_tansfer*4];
                 uint8_t counter = 0;
                 for(int j=0; j<pixels_per_tansfer; j++){                
@@ -96,7 +108,7 @@ void common_hal_simpledisplay_display_show(simpledisplay_display_obj_t* self, mp
             uint8_t pixels8_per_tansfer = 16;
             // after some tests, sending by packets of 16 pixels is the most efficient 
             // and not too greedy in terms of memory			
-            for (int i=0;i<fb->buf_len;i+=pixels8_per_tansfer){
+            for (int i=0; i<fb->buf_len; i+=pixels8_per_tansfer) {
                 uint8_t cc[pixels8_per_tansfer*2];
                 uint8_t counter = 0;
                 for(int j=0; j<pixels8_per_tansfer; j++){                

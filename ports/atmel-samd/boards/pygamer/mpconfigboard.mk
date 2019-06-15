@@ -23,4 +23,6 @@ CIRCUITPY_DISPLAYIO = 0
 CIRCUITPY_SIMPLEDISPLAY = 1
 CIRCUITPY_AUDIOIO = 1
 
-FROZEN_MPY_DIRS += $(TOP)/frozen/circuitpython-stage/pybadge
+# FROZEN_MPY_DIRS += $(TOP)/frozen/circuitpython-stage/pybadge
+FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_BusDevice
+FROZEN_MPY_DIRS += $(TOP)/frozen/Adafruit_CircuitPython_SD

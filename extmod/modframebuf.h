@@ -33,6 +33,7 @@
 #define FRAMEBUF_RGB565     (1)
 #define FRAMEBUF_PAL16      (2)
 #define FRAMEBUF_PAL256     (3)
+#define FRAMEBUF_PAL4       (4)
 
 // Functions for RGB565 format
 #define COL0(r, g, b) ((((r) >> 3) << 11) | (((g) >> 2) << 5) | ((b) >> 3))
@@ -70,6 +71,11 @@ void rgb565_setpixel(const mp_obj_framebuf_t *fb, int x, int y, uint32_t col);
 uint32_t rgb565_getpixel(const mp_obj_framebuf_t *fb, int x, int y);
 void rgb565_fill_rect(const mp_obj_framebuf_t *fb, int x, int y, int w, int h, uint32_t col);
 
+// Function for PAL4
+void pal4_setpixel(const mp_obj_framebuf_t *fb, int x, int y, uint32_t col_index);
+uint32_t pal4_getpixel(const mp_obj_framebuf_t *fb, int x, int y);
+void pal4_fill_rect(const mp_obj_framebuf_t *fb, int x, int y, int w, int h, uint32_t col);
+
 // Function for PAL16
 void pal16_setpixel(const mp_obj_framebuf_t *fb, int x, int y, uint32_t col_index);
 uint32_t pal16_getpixel(const mp_obj_framebuf_t *fb, int x, int y);
@@ -82,6 +88,7 @@ void pal256_fill_rect(const mp_obj_framebuf_t *fb, int x, int y, int w, int h, u
 
 STATIC mp_framebuf_p_t formats[] = {
     [FRAMEBUF_RGB565] = {rgb565_setpixel, rgb565_getpixel, rgb565_fill_rect},
+    [FRAMEBUF_PAL4] = {pal4_setpixel, pal4_getpixel, pal4_fill_rect},    
     [FRAMEBUF_PAL16] = {pal16_setpixel, pal16_getpixel, pal16_fill_rect},
     [FRAMEBUF_PAL256] = {pal256_setpixel, pal256_getpixel, pal256_fill_rect},
 };

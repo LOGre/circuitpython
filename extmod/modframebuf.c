@@ -56,6 +56,52 @@ void rgb565_fill_rect(const mp_obj_framebuf_t *fb, int x, int y, int w, int h, u
         b += fb->stride - w;
     }
 }
+
+// Functions for PAL4 format
+void pal4_setpixel(const mp_obj_framebuf_t *fb, int x, int y, uint32_t col) {
+    uint8_t *pixel = &((uint8_t*)fb->buf)[(x + y * fb->stride) >> 1];
+    switch (x % 4) {
+        case 0:
+            *pixel = ((uint8_t)col & 0x03) | (*pixel & 0x03);
+            break;
+        case 1:
+            *pixel = ((uint8_t)col << 2) | (*pixel & 0x03);
+            break;
+        case 2:
+            *pixel = ((uint8_t)col << 4) | (*pixel & 0x03);
+            break;
+        case 3:
+            *pixel = ((uint8_t)col << 6) | (*pixel & 0x03);
+            break;                        
+    }
+}
+
+uint32_t pal4_getpixel(const mp_obj_framebuf_t *fb, int x, int y) {
+    switch (x % 4) {
+        case 0:
+            return ((uint8_t*)fb->buf)[(x + y * fb->stride) >> 2] & 0x03;
+            break;
+        case 1:
+            return ((uint8_t*)fb->buf)[(x + y * fb->stride) >> 2] >> 2 & 0x03;
+            break;
+        case 2:
+            return ((uint8_t*)fb->buf)[(x + y * fb->stride) >> 2] >> 4 & 0x03;
+            break;
+        case 3:
+            return ((uint8_t*)fb->buf)[(x + y * fb->stride) >> 2] >> 6 & 0x03;
+            break;                        
+    }
+    return ((uint8_t*)fb->buf)[(x + y * fb->stride) >> 2] & 0x03; 
+}
+
+void pal4_fill_rect(const mp_obj_framebuf_t *fb, int x, int y, int w, int h, uint32_t col) {
+    for (int xx=x; xx < x+w; xx++) {
+        for (int yy=y; yy < y+h; yy++) {
+            pal4_setpixel(fb, xx, yy, col);
+        }
+    }
+}
+
 // Functions for PAL16 format
 void pal16_setpixel(const mp_obj_framebuf_t *fb, int x, int y, uint32_t col) {
     uint8_t *pixel = &((uint8_t*)fb->buf)[(x + y * fb->stride) >> 1];
@@ -100,8 +146,6 @@ void pal256_fill_rect(const mp_obj_framebuf_t *fb, int x, int y, int w, int h, u
 }
 
 
-
-
 void fill_rect(const mp_obj_framebuf_t *fb, int x, int y, int w, int h, uint32_t col) {
     if (h < 1 || w < 1 || x + w <= 0 || y + h <= 0 || y >= fb->height || x >= fb->width) {
         // No operation needed.
@@ -144,6 +188,7 @@ STATIC mp_obj_t framebuf_make_new(const mp_obj_type_t *type, size_t n_args, cons
         case FRAMEBUF_MONO:
         case FRAMEBUF_RGB565:
             break;
+        case FRAMEBUF_PAL4:
         case FRAMEBUF_PAL16:
         case FRAMEBUF_PAL256:
             if (n_args == 6) {
@@ -176,6 +221,9 @@ STATIC mp_int_t framebuf_get_buffer(mp_obj_t self_in, mp_buffer_info_t *bufinfo,
         case FRAMEBUF_PAL16:
             bpp = 0.5;    
             break;          
+        case FRAMEBUF_PAL4:
+            bpp = 0.25;    
+            break;                
     }
     bufinfo->len = (self->stride * self->height) * bpp;
     bufinfo->typecode = 'B'; // view framebuf as bytes
@@ -507,6 +555,7 @@ STATIC const mp_rom_map_elem_t framebuf_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__),    MP_ROM_QSTR(MP_QSTR_framebuf) },
     { MP_ROM_QSTR(MP_QSTR_FrameBuffer), MP_ROM_PTR(&mp_type_framebuf) },
     { MP_ROM_QSTR(MP_QSTR_RGB565),      MP_ROM_INT(FRAMEBUF_RGB565) },
+    { MP_ROM_QSTR(MP_QSTR_PAL4),       MP_ROM_INT(FRAMEBUF_PAL4) },
     { MP_ROM_QSTR(MP_QSTR_PAL16),       MP_ROM_INT(FRAMEBUF_PAL16) },
     { MP_ROM_QSTR(MP_QSTR_PAL256),      MP_ROM_INT(FRAMEBUF_PAL256) },
 };
